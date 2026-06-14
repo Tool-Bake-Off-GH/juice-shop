@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014-2025 Bjoern Kimminich & the OWASP Juice Shop contributors.
+ * Copyright (c) 2014-2026 Bjoern Kimminich & the OWASP Juice Shop contributors.
  * SPDX-License-Identifier: MIT
  */
 
@@ -22,7 +22,7 @@ const restoreOverwrittenFilesWithOriginals = async () => {
   }
 
   try {
-    const files = await glob(path.resolve('data/static/i18n/*.json'))
+    const files = await glob(path.resolve('data/static/i18n/*.json'), { windowsPathsNoEscape: true })
     await Promise.all(
       files.map(async (filename: string) => {
         await copyFile(filename, path.resolve('i18n/', filename.substring(filename.lastIndexOf('/') + 1)))

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014-2025 Bjoern Kimminich & the OWASP Juice Shop contributors.
+ * Copyright (c) 2014-2026 Bjoern Kimminich & the OWASP Juice Shop contributors.
  * SPDX-License-Identifier: MIT
  */
 
@@ -92,9 +92,9 @@ const customizeTitle = () => {
 }
 
 const customizeTheme = () => {
-  const bodyClass = '"mat-app-background mat-typography ' + config.get<string>('application.theme') + '-theme"'
+  const bodyClass = '"' + config.get<string>('application.theme') + '-theme"'
   replace({
-    regex: /"mat-app-background mat-typography .*-theme"/,
+    regex: /".*-theme"/,
     replacement: bodyClass,
     paths: ['frontend/dist/frontend/index.html'],
     recursive: false,
