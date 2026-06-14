@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014-2025 Bjoern Kimminich & the OWASP Juice Shop contributors.
+ * Copyright (c) 2014-2026 Bjoern Kimminich & the OWASP Juice Shop contributors.
  * SPDX-License-Identifier: MIT
  */
 
@@ -15,7 +15,7 @@ import sanitizeFilenameLib from 'sanitize-filename'
 import * as utils from './utils'
 
 /* jslint node: true */
-// eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error
+
 // @ts-expect-error FIXME no typescript definitions for z85 :(
 import * as z85 from 'z85'
 
@@ -179,8 +179,8 @@ export const appendUserId = () => {
     try {
       req.body.UserId = authenticatedUsers.tokenMap[utils.jwtFrom(req)].data.id
       next()
-    } catch (error: any) {
-      res.status(401).json({ status: 'error', message: error })
+    } catch (error: unknown) {
+      res.status(401).json({ status: 'error', message: utils.getErrorMessage(error) })
     }
   }
 }

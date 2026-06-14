@@ -1,12 +1,11 @@
 /*
- * Copyright (c) 2014-2025 Bjoern Kimminich & the OWASP Juice Shop contributors.
+ * Copyright (c) 2014-2026 Bjoern Kimminich & the OWASP Juice Shop contributors.
  * SPDX-License-Identifier: MIT
  */
 
 import { type Request, type Response, type NextFunction } from 'express'
 import { AllHtmlEntities as Entities } from 'html-entities'
 import config from 'config'
-import pug from 'pug'
 import fs from 'node:fs/promises'
 
 import * as challengeUtils from '../lib/challengeUtils'
@@ -83,17 +82,22 @@ export function getUserProfile () {
     template = template.replace(/_primDark_/g, theme.primDark)
     template = template.replace(/_logo_/g, utils.extractFilename(config.get('application.logo')))
 
-    const fn = pug.compile(template)
-    const CSP = `img-src 'self' ${user?.profileImage}; script-src 'self' 'unsafe-eval' https://code.getmdl.io http://ajax.googleapis.com`
+    try {
+      const pug = (await import('pug')).default
+      const fn = pug.compile(template)
+      const CSP = `img-src 'self' ${user?.profileImage}; script-src 'self' 'unsafe-eval'`
 
-    challengeUtils.solveIf(challenges.usernameXssChallenge, () => {
-      return username && user?.profileImage.match(/;[ ]*script-src(.)*'unsafe-inline'/g) !== null && utils.contains(username, '<script>alert(`xss`)</script>')
-    })
+      challengeUtils.solveIf(challenges.usernameXssChallenge, () => {
+        return username && user?.profileImage.match(/;[ ]*script-src(.)*'unsafe-inline'/g) !== null && utils.contains(username, '<script>alert(`xss`)</script>')
+      })
 
-    res.set({
-      'Content-Security-Policy': CSP
-    })
+      res.set({
+        'Content-Security-Policy': CSP
+      })
 
-    res.send(fn(user))
+      res.send(fn(user))
+    } catch (err) {
+      next(new Error('Blocked illegal activity by ' + req.socket.remoteAddress))
+    }
   }
 }
